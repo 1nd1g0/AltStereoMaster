@@ -30,13 +30,15 @@ from PyQt5.QtWidgets import (
 )
 
 import ctypes
+import platform
 
-try:
-   
-    myappid = u"StereoMaster.1.1"  
-    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
-except Exception as e:
-    print("Could not set AppUserModelID:", e)
+# Windows-specific: Set AppUserModelID for proper taskbar icon grouping
+if platform.system() == 'Windows':
+    try:
+        myappid = u"StereoMaster.1.1"  
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+    except Exception as e:
+        print("Could not set AppUserModelID:", e)
     
     
 ###########################################################

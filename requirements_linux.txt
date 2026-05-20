@@ -1,0 +1,49 @@
+# Cross-Linux Requirements for StereoMaster
+# This file is compatible with any modern Linux distribution
+# PyTorch will be installed from the official PyTorch index with CUDA support detection
+
+# Install PyTorch with CUDA (will auto-detect CUDA version)
+--index-url https://download.pytorch.org/whl/cu124
+--extra-index-url https://pypi.org/simple
+
+# Core PyTorch packages (version-flexible, will use latest compatible)
+torch
+torchvision
+torchaudio
+
+# Essential dependencies
+argparse
+opencv-contrib-python
+numpy<2.0.0
+tqdm
+requests
+huggingface_hub
+fire
+accelerate
+safetensors
+transformers
+decord
+diffusers
+av
+matplotlib
+mediapy
+opencv-python
+imageio
+imageio-ffmpeg
+easydict
+pillow
+einops
+pyqt5
+numba
+setuptools
+wheel
+ninja
+scenedetect
+color-matcher
+OpenEXR
+Imath
+
+# Forward warp package (build from source on Linux)
+# Note: The CUDA extension will be built during installation
+# Install after other dependencies with: pip install -e dependency/Forward-Warp
+# Then build CUDA extension: cd dependency/Forward-Warp/Forward_Warp/cuda && python setup.py install
