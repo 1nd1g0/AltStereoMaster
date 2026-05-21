@@ -1,7 +1,30 @@
-.vscode/
-checkpoints/
-stereomaster_env/
-weights/
-__pycache__
-*/__pycache__
+```
+# Python
+__pycache__/
 *.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+.ENV
+.ENV.*
+.venv.bak/
+.python-version
+.pytest_cache/
+.mypy_cache/
+.coverage
+coverage/
+
+# Dependencies
+requirements_linux.txt.bak
+*.egg-info/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+```
