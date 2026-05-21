@@ -1,20 +1,21 @@
 # Cross-Linux Requirements for StereoMaster
 # This file is compatible with any modern Linux distribution
 # PyTorch will be installed from the official PyTorch index with CUDA support detection
+# No hardcoded versions - uses latest compatible packages
 
-# Install PyTorch with CUDA (will auto-detect CUDA version)
---index-url https://download.pytorch.org/whl/cu124
+# Install PyTorch with CUDA (auto-detects available CUDA version)
+# Uses dynamic index URL that adapts to system CUDA version
 --extra-index-url https://pypi.org/simple
 
-# Core PyTorch packages (version-flexible, will use latest compatible)
+# Core PyTorch packages (version-flexible, installs latest compatible)
 torch
 torchvision
 torchaudio
 
-# Essential dependencies
+# Essential dependencies (no hardcoded versions)
 argparse
 opencv-contrib-python
-numpy<2.0.0
+numpy
 tqdm
 requests
 huggingface_hub

@@ -10,8 +10,6 @@ from PyQt5.QtCore import QLocale
 from PyQt5.QtCore import QTimer        
 from numba import njit, prange
 import numpy as np
-import imageio_ffmpeg
-ffmpeg_exe = imageio_ffmpeg.get_ffmpeg_exe()
 from PyQt5.QtCore import QUrl, QSize
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QMessageBox
@@ -29,16 +27,51 @@ from PyQt5.QtWidgets import (
     QProgressBar, QToolTip, QSpinBox, QDoubleSpinBox, QInputDialog, QAbstractItemView, QButtonGroup
 )
 
-import ctypes
-import platform
 
-# Windows-specific: Set AppUserModelID for proper taskbar icon grouping
-if platform.system() == 'Windows':
+def get_ffmpeg_path():
+    """
+    Dynamically locate ffmpeg executable on Linux systems.
+    Tries multiple methods in order of preference:
+    1. Check PATH for ffmpeg
+    2. Try common Linux installation paths
+    3. Fall back to 'ffmpeg' command name (relies on PATH)
+    
+    Returns the ffmpeg path or 'ffmpeg' as fallback.
+    Does not fail if offline or if imageio_ffmpeg is unavailable.
+    """
+    import shutil
+    
+    # First, try to find ffmpeg in PATH
+    ffmpeg_path = shutil.which('ffmpeg')
+    if ffmpeg_path:
+        return ffmpeg_path
+    
+    # Try common Linux installation paths
+    common_paths = [
+        '/usr/bin/ffmpeg',
+        '/usr/local/bin/ffmpeg',
+        '/snap/bin/ffmpeg',
+    ]
+    
+    for path in common_paths:
+        if os.path.isfile(path) and os.access(path, os.X_OK):
+            return path
+    
+    # Try imageio_ffmpeg as a last resort (may be bundled)
     try:
-        myappid = u"StereoMaster.1.1"  
-        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
-    except Exception as e:
-        print("Could not set AppUserModelID:", e)
+        import imageio_ffmpeg
+        path = imageio_ffmpeg.get_ffmpeg_exe()
+        if path and os.path.isfile(path):
+            return path
+    except Exception:
+        pass
+    
+    # Final fallback: assume ffmpeg is available via PATH at runtime
+    return 'ffmpeg'
+
+
+# Get ffmpeg executable path dynamically
+ffmpeg_exe = get_ffmpeg_path()
     
     
 ###########################################################
@@ -181,9 +214,7 @@ class SubprocessWorker(QThread):
     def run(self):
         self.lineReady.emit(f"[INFO] => Running: {' '.join(self.cmd)}")
         
-        creation_flags = 0
-        if os.name == "nt":         
-            creation_flags = subprocess.CREATE_NO_WINDOW
+        # Linux-only: no special creation flags needed
         try:
             self.process = subprocess.Popen(
                 self.cmd,
@@ -191,8 +222,7 @@ class SubprocessWorker(QThread):
                 stderr=subprocess.STDOUT,
                 text=True,
                 bufsize=1,
-                universal_newlines=True,
-                creationflags=creation_flags
+                universal_newlines=True
             )
             for line in self.process.stdout:
                 if self._cancel_requested:
@@ -2396,7 +2426,7 @@ class StereoMasterGUI(QMainWindow):
         if success:
             self.log("[OK] => Scene detect done.")
 
-            # Liberar decord para evitar bloqueos en Windows si estaba abierto en preview
+            # Release decord to avoid any potential locks
             self.vid_original = None
             self.vid_depth = None
             self.vid_depth2 = None
@@ -4851,23 +4881,18 @@ class StereoMasterGUI(QMainWindow):
             self.log("[ERROR] => merge fail.")
 
     ###########################################################
-    # UTILS
-    ###########################################################
     def open_folder(self, path_dir):
-        path_abs= os.path.abspath(path_dir)
+        """
+        Open folder in file manager (Linux-only using xdg-open).
+        """
+        path_abs = os.path.abspath(path_dir)
         if not os.path.exists(path_abs):
             os.makedirs(path_abs, exist_ok=True)
-        import platform
-        pf= platform.system()
         try:
-            if pf=="Windows":
-                os.startfile(path_abs)
-            elif pf=="Darwin":
-                subprocess.Popen(["open", path_abs])
-            else:
-                subprocess.Popen(["xdg-open", path_abs])
+            # Linux-only: use xdg-open which is universal across Linux desktop environments
+            subprocess.Popen(["xdg-open", path_abs])
         except Exception as e:
-            QMessageBox.warning(self,"Attention", f"Could not open folder:\n{path_abs}\nError: {e}")
+            QMessageBox.warning(self, "Attention", f"Could not open folder:\n{path_abs}\nError: {e}")
 
     def browse_and_set_folder(self, line_edit):
         selected_dir = QFileDialog.getExistingDirectory(self, "Select a directory")
