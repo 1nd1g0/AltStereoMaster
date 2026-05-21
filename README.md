@@ -1,6 +1,6 @@
 # StereoMaster
 
-**StereoMaster** is a GUI application for converting 2D videos into impressive 3D content using AI. It combines:
+**AltStereoMaster** is a Linux version of GUI application for converting 2D videos into impressive 3D content using AI. It combines:
 - [DepthCrafter](https://huggingface.co/tencent/DepthCrafter)  
 - [Video Depth Anything](https://huggingface.co/depth-anything/Video-Depth-Anything)  
 - [StereoCrafter](https://huggingface.co/TencentARC/StereoCrafter)
@@ -10,7 +10,7 @@
 - `2025/02/09` Initial commit.
 - `2025/02/16` Update: Added downscale inpainting, anaglyph file merging, enhanced partial frames, improved StereoCrafter (mask dilation, blur, configurable chunking), refined color matcher (fixed preview vs. SBS mismatch), new outputs (4KHSBS, Right-Only, EXR export), plus various bug fixes.
 - `2025/02/28` Early Blackwell support, improved color matching in inpainting, new mixed inpainting system, fixed missing frames and repeated frames at the end of each chunk, UI/UX enhancements, VDA split fix for batch_size, and improved installation process.
-- `2025/03/XX` Linux-only release: Cross-distribution compatible, dynamic dependency management, no hardcoded versions.
+- `2026/05/21` Linux-only release: Cross-distribution compatible, dynamic dependency management, no hardcoded versions.
 
 
 ## Features
