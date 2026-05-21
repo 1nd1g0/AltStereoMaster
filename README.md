@@ -1,4 +1,4 @@
-# StereoMaster
+# AltStereoMaster
 
 **AltStereoMaster** is a Linux version of GUI application for converting 2D videos into impressive 3D content using AI. It combines:
 - [DepthCrafter](https://huggingface.co/tencent/DepthCrafter)  
